@@ -1,0 +1,34 @@
+# Práctica: Seguridad, Versionado, Ciclos de Vida y Cifrado en Amazon S3
+
+## Módulo: Seguridad y Alta Disponibilidad / Lenguajes de Marcas
+**Objetivo:** Comprender y aplicar los mecanismos de persistencia, alta disponibilidad, retención de datos, políticas de acceso en formato JSON y seguridad criptográfica en Amazon S3.
+
+---
+
+## 1. Conceptos Clave de AWS S3
+
+* **Bucket (Cubo):** Es el contenedor raíz y principal en Amazon S3 donde se guardan todos los objetos (archivos). Cada bucket tiene un nombre **único a nivel mundial**, y sobre él se aplican las políticas de seguridad en formato JSON, los permisos de acceso y las reglas de retención.
+* **Zona de Disponibilidad (Availability Zone - AZ):** Es un centro de datos físico aislado y autónomo dentro de una región de AWS. Los datos en S3 se replican automáticamente entre múltiples Zonas de Disponibilidad para garantizar una disponibilidad del $99{,}99\%$ y una durabilidad extrema ($99{,}999999999\%$), protegiendo la información aunque caiga un centro de datos entero.
+* **Clases de Almacenamiento y Ciclos de Vida (Lifecycle Rules):** Permiten cambiar automáticamente la clase de almacenamiento de los datos según su antigüedad para optimizar costes:
+  * **S3 Standard:** Para datos de acceso frecuente (alta disponibilidad, mayor coste de almacenamiento).
+  * **S3 Standard-IA / Intelligent-Tiering:** Para datos de acceso infrecuente con recuperación rápida.
+  * **S3 Glacier (Flexible / Deep Archive):** Diseñado para **copias de seguridad (backups) y archivo a largo plazo**. Es **mucho más económico** que el almacenamiento estándar, a cambio de mayores tiempos de recuperación (desde minutos a horas).
+* **Cifrado SSE-C (Server-Side Encryption with Customer-Provided Keys):** Modelo de cifrado en el que **AWS no almacena tus claves**. El cliente gestiona la clave de 256 bits y debe proporcionarla en cada operación de subida o descarga. Si se pierde la clave, los datos son irrecuperables.
+
+---
+
+## EJERCICIO 1 – Alta Disponibilidad y Versionado en S3
+
+**Objetivo:** Gestionar el historial de modificaciones, la integridad de los ficheros y la recuperación ante borrados accidentales.
+
+### Paso 1: Crear el bucket
+1. Accede a la consola de AWS S3 y haz clic en **Create bucket**.
+2. Nombre del bucket: `backups-aaa` (sustituye `aaa` por tus iniciales en minúscula).
+3. Configuración:
+   * Acceso público bloqueado (**Block all public access** activado).
+   * **Bucket Versioning = Enabled**.
+
+### Paso 2: Crear archivo y subirlo
+1. En tu equipo local, crea el fichero `DATOaaa.txt` con el siguiente contenido:
+   ```text
+   Versión 1 del archivo (aaa)
